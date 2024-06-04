@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acolad - ICU String Validator</title>
+    <script src="./messageformat.min.js"></script>
+    <script src="./jszip.min.js"></script>
+    <script src="./jspdf.umd.min.js"></script>
+    <script src="./html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Verdana, Tahoma, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #ffffff;
+            color: #0a1c34;
+        }
+
+        .header img {
+            max-height: 60px;
+            margin-right: 10px;
+        }
+
+        .header h1 {
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .workflow {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        .workflow-box {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 30%;
+        }
+
+        .workflow-box h2 {
+            font-size: 1.2em;
+        }
+
+        .workflow-box p {
+            font-size: 0.9em;
+            white-space: pre-line;
+        }
+
+        .workflow-box button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #0a1c34;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .workflow-box button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .workflow-box button:hover:not(:disabled) {
+            background-color: #0a1c34;
+        }
+
+        .content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        button {
+            margin-top: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            background-color: #0a1c34;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #0a1c34;
+        }
+
+        .separator {
+            display: block;
+            height: 20px;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        td[contenteditable="true"] {
+            background-color: #ffefcc;
+        }
+
+        .error {
+            color: #ff4c4c;
+        }
+
+        .success {
+            color: #4caf50;
+        }
+
+        h2.error-header,
+        h2.success-header {
+            padding-bottom: 5px;
+        }
+
+        table th:nth-child(3),
+        table td:nth-child(3),
+        table th:nth-child(5),
+        table td:nth-child(5),
+        table th:nth-child(6),
+        table td:nth-child(6) {
+            width: 20%;
+        }
+
+        table th:nth-child(1),
+        table td:nth-child(1),
+        table th:nth-child(2),
+        table td:nth-child(2),
+        table th:nth-child(4),
+        table td:nth-child(4),
+        table th:nth-child(7),
+        table td:nth-child(7),
+        table th:nth-child(8),
+        table td:nth-child(8) {
+            width: 10%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="https://languageco.com/wp-content/uploads/listing-uploads/logo/2022/07/acolad-a-white.png" alt="Acolad Logo">
+        <h1>ICU String Validator</h1>
+    </div>
+    <div class="workflow">
+        <div class="workflow-box">
+            <h2>Select World Server Packages</h2>
+            <p>1 - Click on "Select Packages".<br>2 - Open the .wsxz packages to be validated.</p>
+            <input type="file" id="fileInput" style="display: none;" multiple>
+            <button id="selectFilesButton">Select Package(s)</button>
+        </div>
+        <div class="workflow-box">
+            <h2>Revalidate</h2>
+            <p>3 - Fix the errors on the yellow column.<br>4 - Click on "Apply Change" for all entries<br>5 - Click on the "Revalidate Packages" button.</p>
+            <button id="revalidatePackagesButton" disabled>Revalidate Packages</button>
+        </div>
+        <div class="workflow-box">
+            <h2>Download New Packages and Report</h2>
+            <p>6 - Download the modified packages and PDF report<br>7 - Deliver the packages on World Server and the PDF report to Acolad.</p>
+            <button id="downloadDeliverablesButton" disabled>Download Deliverables</button>
+        </div>
+    </div>
+    <div class="content">
+        <span class="separator"></span>
+        <div id="log">
+            <h2 class="error-header">Packages with Errors</h2>
+            <table id="errorTable">
+                <thead>
+                    <tr>
+                        <th>WS Package</th>
+                        <th>Error Type</th>
+                        <th>Error Description</th>
+                        <th>ID</th>
+                        <th>Source</th>
+                        <th>Target (to modify)</th>
+                        <th>Language</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Error log entries will be appended here -->
+                </tbody>
+            </table>
+            <h2 class="success-header">Packages without Errors</h2>
+            <table id="infoTable">
+                <thead>
+                    <tr>
+                        <th>WS Package</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Language</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Info log entries will be appended here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let logData = [];
+        let modifiedTransUnits = {};
+        let zipInstances = {};
+        const errorTableBody = document.querySelector('#errorTable tbody');
+        const infoTableBody = document.querySelector('#infoTable tbody');
+
+        document.getElementById('selectFilesButton').addEventListener('click', handleFileInputClick);
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        document.getElementById('revalidatePackagesButton').addEventListener('click', revalidatePackages);
+        document.getElementById('downloadDeliverablesButton').addEventListener('click', downloadDeliverables);
+
+        function handleFileInputClick(event) {
+            event.preventDefault();
+            document.getElementById('fileInput').click();
+        }
+
+        async function handleFileSelect(event) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            const files = event.target.files;
+            if (!files || files.length === 0) {
+                return;
+            }
+
+            errorTableBody.innerHTML = '';
+            infoTableBody.innerHTML = '';
+            logData = [];
+            modifiedTransUnits = {};
+            zipInstances = {};
+
+            for (const file of files) {
+                if (file.name.endsWith('.wsxz')) {
+                    await processWSXZFile(file);
+                } else {
+                    logMessage(file.name, 'Error', `Unsupported file format for ${file.name}`, '', '', '', '', 'error');
+                }
+            }
+
+            document.getElementById('revalidatePackagesButton').disabled = false;
+            document.getElementById('downloadDeliverablesButton').disabled = true;
+        }
+
+        async function processWSXZFile(file) {
+            const fileContent = await readFileAsync(file);
+            const zip = await JSZip.loadAsync(fileContent);
+            const fileNames = Object.keys(zip.files);
+
+            const xlfFiles = fileNames.filter(fileName => fileName.endsWith('.xlf'));
+
+            if (xlfFiles.length === 0) {
+                logMessage(file.name, 'Error', `No .xlf files found in ${file.name}`, '', '', '', '', 'error');
+                return;
+            }
+
+            zipInstances[file.name] = zip;
+
+            for (const fileName of xlfFiles) {
+                let xlfContent = await zip.file(fileName).async('string');
+                const commentsRemoved = hasComments(xlfContent);
+                xlfContent = removeComments(xlfContent); // Remove comments before processing
+                await zip.file(fileName, xlfContent); // Save the modified xlf content back to the zip
+                processXLFContent(xlfContent, fileName, file.name, zip, commentsRemoved);
+            }
+        }
+
+        function removeComments(xmlContent) {
+            // Remove XML comments
+            xmlContent = xmlContent.replace(/<!--[\s\S]*?-->/g, '');
+            // Remove <note> elements and their contents
+            xmlContent = xmlContent.replace(/<note[\s\S]*?<\/note>/g, '');
+            return xmlContent;
+        }
+
+        function hasComments(xmlContent) {
+            return /<!--[\s\S]*?-->/g.test(xmlContent) || /<note[\s\S]*?<\/note>/g.test(xmlContent);
+        }
+
+        function processXLFContent(content, fileName, wsxzFileName, zip, commentsRemoved) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(content, 'text/xml');
+            const transUnits = xmlDoc.querySelectorAll('trans-unit');
+            const targetLanguage = xmlDoc.getElementsByTagName("file")[0].getAttribute("target-language");
+
+            let hasErrors = false;
+
+            transUnits.forEach(transUnit => {
+                const source = transUnit.querySelector('source').textContent;
+                const target = transUnit.querySelector('target').textContent;
+                const id = transUnit.getAttribute('id');
+
+                if (target.trim() === "" && source.trim() !== "") {
+                    logMessage(wsxzFileName, 'Validation Error', `Source is not empty but target is empty. Plural rules for ${targetLanguage}: ${getPluralRules(targetLanguage)}`, id, source, target, targetLanguage, 'error', transUnit, zip, fileName);
+                    hasErrors = true;
+                    return;
+                } else if (target.trim() !== "" && source.trim() === "") {
+                    logMessage(wsxzFileName, 'Validation Warning', `Source is empty but target is not empty. This might be valid and can be ignored. Plural rules for ${targetLanguage}: ${getPluralRules(targetLanguage)}`, id, source, target, targetLanguage, 'error', transUnit, zip, fileName);
+                    hasErrors = true;
+                    return;
+                } else if (source.trim() === "") return;
+                validateTarget(wsxzFileName, source, target, targetLanguage, id, logMessage, transUnit, zip, fileName);
+            });
+
+            if (!hasErrors) {
+                logInfo(wsxzFileName, 'Verified', 'No errors found', targetLanguage, commentsRemoved ? 'Comments removed' : 'No comments found');
+            }
+        }
+
+        function getPluralRules(language) {
+            const pluralRules = new Intl.PluralRules(language);
+            const examples = {
+                "zero": pluralRules.select(0),
+                "one": pluralRules.select(1),
+                "two": pluralRules.select(2),
+                "few": pluralRules.select(3),
+                "many": pluralRules.select(5),
+                "other": pluralRules.select(100)
+            };
+            return JSON.stringify(examples, null, 2);
+        }
+
+        async function readFileAsync(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function validateTarget(filename, source, target, targetLanguage, id, logMessage, transUnit, zip, fileName) {
+            try {
+                const icupluralselect = /(?:(plural|select),)/;
+                const hasPluralSelectSource = icupluralselect.test(source);
+                const hasPluralSelectTarget = icupluralselect.test(target);
+                const param = /\$?{[a-zA-Z_-]+(,\s*[a-zA-Z_-]+)*}/g;
+                const source_params = Array.from(source.matchAll(param), match => match[0]);
+                const target_params = Array.from(target.matchAll(param), match => match[0]);
+
+                if (source_params.length) {
+                    let missingParam = [];
+                    let extraParam = [];
+                    if (target_params.length > source_params.length) {
+                        for (const param of target_params) {
+                            if (!source_params.includes(param)) {
+                                extraParam.push(param);
+                            }
+                        }
+                        if (extraParam.length) {
+                            throw new Error(`Variable [${extraParam.join(", ")}] not found in source`);
+                        }
+                    } else {
+                        for (const param of source_params) {
+                            if (!target_params.includes(param)) {
+                                missingParam.push(param);
+                            }
+                        }
+                        if (missingParam.length) {
+                            throw new Error(`Variable [${missingParam.join(", ")}] missing in target`);
+                        }
+                    }
+                } else if (target_params.length > source_params.length) {
+                    throw new Error(`Variable [${target_params.join(", ")}] not found in source`);
+                }
+
+                if (hasPluralSelectSource && !hasPluralSelectTarget) {
+                    const localeRules = new Intl.PluralRules(targetLanguage).resolvedOptions();
+                    throw new Error(`Plural or Select argument found in source but is missing in target. Rules for locale ${targetLanguage}: ${JSON.stringify(localeRules)}`);
+                }
+
+                const mf = new MessageFormat(targetLanguage);
+                mf.compile(target);
+            } catch (error2) {
+                logMessage(filename, 'Compilation Error', error2.message, id, source, target, targetLanguage, 'error', transUnit, zip, fileName);
+            }
+        }
+
+        function logMessage(file, errorType, errorDescription, id, source, target, language, color, transUnit, zip, fileName) {
+            const logRow = document.createElement('tr');
+
+            const fileCell = document.createElement('td');
+            fileCell.textContent = file;
+            logRow.appendChild(fileCell);
+
+            const errorTypeCell = document.createElement('td');
+            errorTypeCell.textContent = errorType;
+            logRow.appendChild(errorTypeCell);
+
+            const errorDescriptionCell = document.createElement('td');
+            errorDescriptionCell.textContent = errorDescription;
+            logRow.appendChild(errorDescriptionCell);
+
+            const idCell = document.createElement('td');
+            idCell.textContent = id;
+            logRow.appendChild(idCell);
+
+            const sourceCell = document.createElement('td');
+            sourceCell.textContent = source;
+            logRow.appendChild(sourceCell);
+
+            const targetCell = document.createElement('td');
+            targetCell.textContent = target;
+            if (errorType !== 'Info') {
+                targetCell.contentEditable = true;
+                targetCell.style.backgroundColor = '#ffefcc';
+            }
+            logRow.appendChild(targetCell);
+
+            const languageCell = document.createElement('td');
+            languageCell.textContent = language;
+            logRow.appendChild(languageCell);
+
+            const actionsCell = document.createElement('td');
+            if (errorType !== 'Info') {
+                const applyChangeButton = document.createElement('button');
+                applyChangeButton.textContent = 'Apply Change';
+                applyChangeButton.onclick = () => applyChange(logRow, transUnit, zip, fileName);
+                actionsCell.appendChild(applyChangeButton);
+            }
+            logRow.appendChild(actionsCell);
+
+            logRow.classList.add(color);
+
+            if (errorType === 'Info') {
+                infoTableBody.appendChild(logRow);
+            } else {
+                errorTableBody.appendChild(logRow);
+            }
+
+            logData.push({
+                file,
+                errorType,
+                errorDescription,
+                id,
+                source,
+                target,
+                language,
+                action: '',
+                newTarget: ''
+            });
+
+            updateDownloadButtonState();
+        }
+
+        function logInfo(file, status, description, language, comments) {
+            const logRow = document.createElement('tr');
+
+            const fileCell = document.createElement('td');
+            fileCell.textContent = file;
+            logRow.appendChild(fileCell);
+
+            const statusCell = document.createElement('td');
+            statusCell.textContent = status;
+            logRow.appendChild(statusCell);
+
+            const descriptionCell = document.createElement('td');
+            descriptionCell.textContent = description;
+            logRow.appendChild(descriptionCell);
+
+            const languageCell = document.createElement('td');
+            languageCell.textContent = language;
+            logRow.appendChild(languageCell);
+
+            const commentsCell = document.createElement('td');
+            commentsCell.textContent = comments;
+            logRow.appendChild(commentsCell);
+
+            logRow.classList.add('success');
+            infoTableBody.appendChild(logRow);
+
+            logData.push({
+                file,
+                errorType: 'Info',
+                errorDescription: description,
+                id: '',
+                source: '',
+                target: '',
+                language: language,
+                action: status,
+                newTarget: '',
+                comments: comments
+            });
+
+            updateDownloadButtonState();
+        }
+
+        function updateDownloadButtonState() {
+            const hasErrors = logData.some(log => log.errorType !== 'Info');
+            document.getElementById('downloadDeliverablesButton').disabled = hasErrors;
+        }
+
+        async function applyChange(logRow, transUnit, zip, fileName) {
+            const targetCell = logRow.children[5];
+            const newTarget = targetCell.textContent;
+
+            transUnit.querySelector('target').textContent = newTarget;
+            const serializer = new XMLSerializer();
+            const newXmlContent = serializer.serializeToString(transUnit.ownerDocument);
+            await zip.file(fileName, newXmlContent);
+
+            logRow.classList.remove('error');
+            logRow.classList.add('success');
+            logRow.querySelectorAll('button').forEach(button => button.disabled = true);
+
+            const logEntry = logData.find(log => log.id === logRow.children[3].textContent);
+            logEntry.action = 'Applied';
+            logEntry.newTarget = newTarget;
+
+            updateDownloadButtonState();
+        }
+
+        async function revalidatePackages() {
+            // Clear previous logs
+            errorTableBody.innerHTML = '';
+            infoTableBody.innerHTML = '';
+            logData = [];
+
+            for (const [fileName, zip] of Object.entries(zipInstances)) {
+                const xlfFiles = Object.keys(zip.files).filter(file => file.endsWith('.xlf'));
+
+                for (const xlfFile of xlfFiles) {
+                    let xlfContent = await zip.file(xlfFile).async('string');
+                    const commentsRemoved = hasComments(xlfContent);
+                    xlfContent = removeComments(xlfContent); // Remove comments before revalidating
+                    await zip.file(xlfFile, xlfContent); // Save the modified xlf content back to the zip
+                    processXLFContent(xlfContent, xlfFile, fileName, zip, commentsRemoved);
+                }
+            }
+
+            updateDownloadButtonState();
+        }
+
+        async function downloadDeliverables() {
+            const zip = new JSZip();
+            const reportFolder = zip.folder("report");
+            const packagesFolder = zip.folder("packages");
+
+            const doc = new jspdf.jsPDF();
+            let y = 10;
+            doc.setFontSize(12);
+            doc.text('Validation Report', 10, y);
+            y += 10;
+
+            if (logData.every(log => log.errorType === 'Info')) {
+                doc.setFontSize(10);
+                doc.text('All packages were processed and validated successfully with no errors.', 10, y);
+                y += 10;
+
+                doc.setFontSize(12);
+                doc.text('Validated Packages:', 10, y);
+                y += 10;
+
+                doc.setFontSize(10);
+                logData.forEach(log => {
+                    doc.text(`- ${log.file}`, 10, y);
+                    y += 6;
+                });
+            } else {
+                doc.setFontSize(10);
+                doc.text('There were errors in the packages processed. Please see the details below:', 10, y);
+                y += 10;
+
+                logData.forEach(log => {
+                    const { file, errorType, errorDescription, id, source, target, language, action, newTarget, comments } = log;
+                    doc.text(`File: ${file}`, 10, y);
+                    y += 6;
+                    doc.text(`Error Type: ${errorType}`, 10, y);
+                    y += 6;
+                    doc.text(`Error Description: ${errorDescription}`, 10, y);
+                    y += 6;
+                    doc.text(`ID: ${id}`, 10, y);
+                    y += 6;
+                    doc.text(`Source: ${source}`, 10, y);
+                    y += 6;
+                    doc.text(`Target: ${target}`, 10, y);
+                    y += 6;
+                    doc.text(`Language: ${language}`, 10, y);
+                    y += 6;
+                    doc.text(`Action: ${action}`, 10, y);
+                    y += 6;
+                    if (newTarget) {
+                        doc.text(`New Target: ${newTarget}`, 10, y);
+                        y += 6;
+                    }
+                    if (comments) {
+                        doc.text(`Comments: ${comments}`, 10, y);
+                        y += 6;
+                    }
+                    y += 6;
+                });
+            }
+
+            const pdfBlob = doc.output('blob');
+            reportFolder.file('validation_report.pdf', pdfBlob);
+
+            for (const [fileName, zipInstance] of Object.entries(zipInstances)) {
+                const modifiedBlob = await zipInstance.generateAsync({
+                    type: 'blob'
+                });
+                packagesFolder.file(fileName, modifiedBlob);
+            }
+
+            const content = await zip.generateAsync({
+                type: 'blob'
+            });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = 'deliverables.zip';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+    </script>
+</body>
+
+</html>
