@@ -21,17 +21,16 @@
         .header {
             display: flex;
             align-items: center;
+            flex-direction: column;
             padding: 10px;
             background-color: #ffffff;
             color: #0a1c34;
-            justify-content: center;
             position: relative;
         }
 
         .header img {
             max-height: 60px;
-            position: absolute;
-            left: 10px;
+            margin-bottom: 10px;
         }
 
         .header h1 {
@@ -81,7 +80,7 @@
 
         .workflow-box button {
             margin-top: 10px;
-            padding: 8px 12px;
+            padding: 6px 10px;
             font-size: 14px;
             background-color: #0a1c34;
             color: white;
@@ -118,7 +117,7 @@
 
         button {
             margin-top: 5px;
-            padding: 8px 12px;
+            padding: 6px 10px;
             font-size: 14px;
             background-color: #0a1c34;
             color: white;
@@ -207,20 +206,31 @@
         table td:nth-child(8) {
             width: 10%;
         }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f2f2f2;
+        }
+
+        .footer a {
+            color: #0a1c34;
+            text-decoration: none;
+        }
     </style>
 </head>
 
 <body>
     <div class="header">
         <img src="https://languageco.com/wp-content/uploads/listing-uploads/logo/2022/07/acolad-a-white.png" alt="Acolad Logo">
-        <h1><br>ICU String Validator<br></h1>
+        <h1>ICU String Validator</h1>
     </div>
     <div class="header-description">
-        A tool to validate ICU strings in your World Server packages. Check out the project on <a href="https://github.com/LCapy/ICU-Validator" target="_blank">GitHub</a>.
+        A tool to validate ICU strings in your World Server packages.
     </div>
     <div class="workflow">
         <div class="workflow-box">
-            <h2><strong>Step 1</strong>strong><br>Select World Server Packages</h2>
+            <h2><strong>Step 1</strong><br>Select World Server Packages</h2>
             <p>1 - Click on "Select Packages".<br>2 - Open the .wsxz packages to be validated.</p>
             <input type="file" id="fileInput" style="display: none;" multiple>
             <button id="selectFilesButton">Select Package(s)</button>
@@ -273,6 +283,9 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="footer">
+        Check out the project on <a href="https://github.com/LCapy/ICU-Validator" target="_blank">GitHub</a>.
     </div>
 
     <script>
