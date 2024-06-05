@@ -21,10 +21,14 @@
         .header {
             display: flex;
             flex-direction: column;
+            padding: 30px 10px 10px; /* Added top padding */
             align-items: center;
             padding: 10px;
             background-color: #ffffff;
             color: #0a1c34;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header img {
@@ -32,6 +36,7 @@
             height: 17.5px;
             margin-bottom: 10px;
             align-self: flex-start;
+            cursor: pointer;
         }
 
         .header h1 {
@@ -106,8 +111,8 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 40px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: transparent;
+            box-shadow: none;
         }
 
         .centered {
@@ -226,7 +231,9 @@
 
 <body>
     <div class="header">
-        <img src="https://www.acolad.com/content/dam/acolad-logo-dark.png/_jcr_content/renditions/cq5dam.web.1280.1280.png" alt="Acolad Logo">
+        <a href="https://www.acolad.com/" target="_blank">
+            <img src="https://www.acolad.com/content/dam/acolad-logo-dark.png/_jcr_content/renditions/cq5dam.web.1280.1280.png" alt="Acolad Logo">
+        </a>
         <h1><br><strong>ICU String Validator</strong></h1>
     </div>
     <div class="header-description">
