@@ -1,7 +1,7 @@
 # ICU Validator
 
 This project is a web-based tool for validating ICU strings inside WSXZ packages. 
-It removes comments and validates the contents of `.xlf` files within WSXZ packages.
+It removes comments and validates all strings in the `.xlf` files, within the WSXZ packages.
 
 ## Features
 
