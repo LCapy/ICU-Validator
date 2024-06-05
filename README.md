@@ -14,7 +14,7 @@ It removes comments and validates the contents of `.xlf` files within WSXZ packa
 
 1. **Select Packages**: Click on "Select Package(s)" to upload your WSXZ packages.
 2. **Revalidate**: Fix the errors in the yellow column and click "Apply Change". Then click on "Revalidate Packages".
-3. **Download**: Click on "Download Deliverables" to download the modified packages and the PDF report.
+3. **Download**: Click on "Download Deliverables" to download the modified packages and a PDF report.
 
 ## Hosting
 
