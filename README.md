@@ -5,8 +5,8 @@ It removes comments and validates the contents of `.xlf` files within WSXZ packa
 
 ## Features
 
+- Validates the contents of the `.xlf` files, including ICU rules.
 - Removes comments from `.xlf` files within WSXZ packages.
-- Validates the contents of the `.xlf` files.
 - Provides a report of errors and modifications.
 - Allows downloading modified packages and validation reports.
 
