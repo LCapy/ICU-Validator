@@ -1,0 +1,6 @@
+node_modules/
+extracted_xlf/
+ready to deliver/
+packages with errors/
+*.xlsx
+aggregated_translations.json

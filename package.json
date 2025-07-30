@@ -1,0 +1,12 @@
+{
+  "name": "icu-validator",
+  "version": "1.0.0",
+  "main": "validator.js",
+  "dependencies": {
+    "@messageformat/core": "^3.0.0",
+    "@messageformat/parser": "^2.3.0",
+    "exceljs": "^4.3.0",
+    "fast-xml-parser": "^4.2.4",
+    "jszip": "^3.10.1"
+  }
+}
