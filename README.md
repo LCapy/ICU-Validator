@@ -16,6 +16,10 @@ It removes comments and validates all strings in the `.xlf` files, within the WS
 2. **Revalidate**: Fix the errors in the yellow column and click "Apply Change". Then click on "Revalidate Packages".
 3. **Download**: Click on "Download Deliverables" to download the modified packages and a PDF report.
 
+### Command line
+
+Run `node validator.js <input_directory> <tool_type>` to validate packages from the command line. The tool type can be `ws` or `cats`.
+
 ## Hosting
 
 This project is hosted using GitHub Pages. 
@@ -29,7 +33,7 @@ You can access it [here](https://lcapy.github.io/ICU-Validator/).
 - `jspdf.umd.min.js`: PDF generation library.
 - `jszip.min.js`: Library for creating and managing ZIP files.
 - `messageformat.js` and `messageformat.min.js`: Library for handling ICU message formats.
-- `validador.js`: Custom JavaScript for handling the validation logic.
+- `validator.js`: Node.js script for validating ICU strings and generating Excel reports.
 - `xlsx.full.min.js`: Library for handling Excel files.
 
 ## Contributing

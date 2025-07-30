@@ -1,0 +1,10 @@
+{
+  "en": {
+    "rules": {
+      "cardinal": {
+        "one": "n is 1",
+        "other": "true"
+      }
+    }
+  }
+}
